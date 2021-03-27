@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\APIController;
+use App\Http\Controllers\ProductController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,3 +32,5 @@ Route::group(["middleware" => "auth.jwt"], function () {
         return json_encode($data);
     });
 });
+
+Route::apiResource('products', ProductController::class);
