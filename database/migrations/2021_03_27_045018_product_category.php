@@ -17,10 +17,10 @@ class ProductCategory extends Migration
             $table->increments('id');
 
             $table->integer('p_id')->unsigned()->index();
-            $table->foreign('p_id')->references('p_id')->on('products')->onDelete('cascade');
+            $table->foreign('p_id')->references('id')->on('products')->onDelete('cascade');
 
             $table->integer('c_id')->unsigned()->index();
-            $table->foreign('c_id')->references('c_id')->on('categories')->onDelete('cascade');
+            $table->foreign('c_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 

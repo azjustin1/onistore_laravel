@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Middleware\Slugify;
+use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
@@ -16,7 +17,7 @@ class ProductController extends Controller
     public function index()
     {
         $product = Product::all();
-        return response()->json($product)->header('X-Total-Count', Product::all()->count());
+        return response()->json($product, Response::HTTP_OK)->header('X-Total-Count', Product::all()->count())->header("Access-Control-Expose-Headers", "X-Total-Count");
     }
 
     /**
@@ -39,14 +40,14 @@ class ProductController extends Controller
     {
         $product = new Product();
         $slug = new Slugify();
-        $product->p_name = $request->p_name;
-        $product->p_description = $request->p_description;
-        $product->p_amount = $request->p_amount;
-        $product->p_slug = $slug->Slug($product->p_name);
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->amount = $request->amount;
+        $product->slug = $slug->Slug($product->name);
         if ($product->save()) {
             return response()->json($product);
         } else {
-            return response()->json(["message" => "Store faild"], 500);
+            return response()->json(["message" => "Store faild"], Response::HTTP_BAD_GATEWAY);
         }
     }
 
@@ -56,10 +57,11 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        $product_result = Product::findOrFail($id);
-        return new ProductResource($product_result);
+//        $product_result = Product::findOrFail($id);
+//        return new ProductResource($product_result);
+        return response()->json($product, Response::HTTP_OK);
     }
 
     /**
@@ -80,9 +82,9 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        return $product->update($request->all());
     }
 
     /**
@@ -93,6 +95,9 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        if ($product->delete()) {
+            return response()->json($product, Response::HTTP_OK);
+        }
+
     }
 }
