@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,3 +35,4 @@ Route::group(["middleware" => "auth.jwt"], function () {
 });
 
 Route::apiResource('products', ProductController::class);
+Route::apiResource('categories', CategoryController::class);

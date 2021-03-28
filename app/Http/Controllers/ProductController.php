@@ -4,19 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Middleware\Slugify;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
         $product = Product::all();
-        // return ProductResource::collection($product);
-        return response()->json(["product"=> $product]);
+        return response()->json($product)->header('X-Total-Count', Product::all()->count());
     }
 
     /**
@@ -38,11 +38,15 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $product = new Product();
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->amount = $request->amount;
+        $slug = new Slugify();
+        $product->p_name = $request->p_name;
+        $product->p_description = $request->p_description;
+        $product->p_amount = $request->p_amount;
+        $product->p_slug = $slug->Slug($product->p_name);
         if ($product->save()) {
-            return new ProductResource($product);
+            return response()->json($product);
+        } else {
+            return response()->json(["message" => "Store faild"], 500);
         }
     }
 
@@ -52,9 +56,9 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show($id)
     {
-        $product_result = Product::findOrFail($product->$p_id);
+        $product_result = Product::findOrFail($id);
         return new ProductResource($product_result);
     }
 
@@ -76,7 +80,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
         //
     }
