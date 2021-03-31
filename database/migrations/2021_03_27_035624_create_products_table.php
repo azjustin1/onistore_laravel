@@ -20,6 +20,7 @@ class CreateProductsTable extends Migration
             $table->string('slug')->nullable();
             $table->double('amount', 8, 2);
             $table->timestamps();
+
         });
     }
 

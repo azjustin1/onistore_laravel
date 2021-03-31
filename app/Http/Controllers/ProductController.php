@@ -16,7 +16,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $product = Product::all();
+//        $product = Product::all();
+        $product = Product::with("image")->get();
         return response()->json($product, Response::HTTP_OK)->header('X-Total-Count', Product::all()->count())->header("Access-Control-Expose-Headers", "X-Total-Count");
     }
 
@@ -33,7 +34,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -54,20 +55,19 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Product  $product
+     * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function show(Product $product)
     {
-//        $product_result = Product::findOrFail($id);
-//        return new ProductResource($product_result);
-        return response()->json($product, Response::HTTP_OK);
+        $product_result = $product::with("image")->firstOr();
+        return response()->json($product_result, Response::HTTP_OK);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Product  $product
+     * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function edit(Product $product)
@@ -78,19 +78,24 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Product $product)
     {
-        return $product->update($request->all());
+        $slug = new Slugify();
+        $requestData = $request->all();
+        $requestData['slug'] = $slug->Slug($request['name']);
+        if ($product->update($requestData)) {
+            return response()->json($product, Response::HTTP_OK);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Product  $product
+     * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function destroy(Product $product)

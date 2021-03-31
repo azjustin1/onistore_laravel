@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Models\Image;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
-class CategoryController extends Controller
+class ImageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $category = Category::all();
-        return response()->json($category)->header('X-Total-Count', Category::all()->count())->header("Access-Control-Expose-Headers", "X-Total-Count");;
+        //
     }
 
     /**
@@ -43,21 +41,21 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\Image  $image
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(Image $image)
     {
-        return response()->json($category, Response::HTTP_OK);
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\Image  $image
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit(Image $image)
     {
         //
     }
@@ -66,24 +64,22 @@ class CategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\Image  $image
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Image $image)
     {
-        return $category->update($request->all());
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\Image  $image
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(Image $image)
     {
-        if ($category->delete()) {
-            return response()->json($category, Response::HTTP_OK);
-        }
+        //
     }
 }
