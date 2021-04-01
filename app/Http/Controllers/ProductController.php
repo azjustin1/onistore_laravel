@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Product;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use App\Http\Middleware\Slugify;
 use Illuminate\Http\Response;
@@ -65,7 +66,12 @@ class ProductController extends Controller
     {
         $product_result = $product::with("image")->firstOr();
         $comment = Comment::with("user")->where("product_id", $product["id"])->get();
-        return response()->json(["products" => $product_result, "comments" => $comment], Response::HTTP_OK);
+        $rating = Rating::with("user")->where("product_id", $product["id"])->get();
+        return response()->json([
+            "products" => $product_result,
+            "comments" => $comment,
+            "ratings" => $rating
+        ], Response::HTTP_OK);
     }
 
     /**
