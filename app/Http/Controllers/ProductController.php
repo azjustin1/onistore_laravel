@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Middleware\Slugify;
@@ -18,7 +19,9 @@ class ProductController extends Controller
     {
 //        $product = Product::all();
         $product = Product::with("image")->get();
-        return response()->json($product, Response::HTTP_OK)->header('X-Total-Count', Product::all()->count())->header("Access-Control-Expose-Headers", "X-Total-Count");
+        return response()->json($product, Response::HTTP_OK)
+            ->header('X-Total-Count', Product::all()->count())
+            ->header("Access-Control-Expose-Headers", "X-Total-Count");
     }
 
     /**
@@ -56,12 +59,13 @@ class ProductController extends Controller
      * Display the specified resource.
      *
      * @param \App\Models\Product $product
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Product $product)
     {
         $product_result = $product::with("image")->firstOr();
-        return response()->json($product_result, Response::HTTP_OK);
+        $comment = Comment::with("user")->where("product_id", $product["id"])->get();
+        return response()->json(["products" => $product_result, "comments" => $comment], Response::HTTP_OK);
     }
 
     /**

@@ -22,6 +22,10 @@ Route::middleware("auth:api")->get("/user", function (Request $request) {
     return $request->user();
 });
 
+//Route::middleware('auth:api')->group(function () {
+//    Route::get('/details', 'UserController@details');
+//});
+
 Route::post("signup", [UserController::class, "signup"]);
 Route::post("signin", [UserController::class, "signin"]);
 
@@ -36,3 +40,4 @@ Route::group(["middleware" => "auth.jwt"], function () {
 
 Route::apiResource('products', ProductController::class);
 Route::apiResource('categories', CategoryController::class);
+Route::apiResource('comments', \App\Http\Controllers\CommentController::class);
