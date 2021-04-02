@@ -7,17 +7,19 @@ use App\Models\Product;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class RatingController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //
+        $product = Product::with("rating")->get();
+        return response()->json($product, Response::HTTP_OK);
     }
 
     /**
@@ -34,38 +36,43 @@ class RatingController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'rate' => 'required',
+        $validate = Validator::make($request->all(), [
+            "product_id" => "required",
+            "rate" => "required|integer|min:1|max:5"
         ]);
 
-        $requestData = $request->all();
-        $user = new Ulti();
-        $userId = $user->getAuthenticatedUser();
-
-        $rating = Rating::with("user")
-            ->where("user_id", $userId)
-            ->where("product_id", $requestData["product_id"])
-            ->first();
-
-        if ($rating === null) {
-//            $product = Product::with("image")->where("id", $requestData['product_id'])->first();
-            $rating = new Rating();
-
-            $rating->user_id = $userId;
-            $rating->product_id = $requestData['product_id'];
-            $rating->rate = $request['rate'];
-
-            if ($rating->save()) {
-                return response()->json($rating, Response::HTTP_CREATED);
-            } else {
-                return response()->json(["message" => "Store faild"], Response::HTTP_ACCEPTED);
-            }
+        if ($validate->fails()) {
+            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
         } else {
-            return response()->json(["message" => "You have rated before"], Response::HTTP_ACCEPTED);
+            $requestData = $request->all();
+            $user = new Ulti();
+            $userId = $user->getAuthenticatedUser();
+
+            $rating = Rating::with("user")
+                ->where("user_id", $userId)
+                ->where("product_id", $requestData["product_id"])
+                ->first();
+
+            if ($rating === null) {
+//            $product = Product::with("image")->where("id", $requestData['product_id'])->first();
+                $rating = new Rating();
+
+                $rating->user_id = $userId;
+                $rating->product_id = $requestData['product_id'];
+                $rating->rate = $request['rate'];
+
+                if ($rating->save()) {
+                    return response()->json($rating, Response::HTTP_CREATED);
+                } else {
+                    return response()->json(["message" => "Store faild"], Response::HTTP_ACCEPTED);
+                }
+            } else {
+                return response()->json(["message" => "You have rated before"], Response::HTTP_ACCEPTED);
+            }
         }
 
     }
