@@ -39,6 +39,7 @@ Route::group(["middleware" => "auth.jwt"], function () {
 });
 
 Route::apiResource('products', ProductController::class);
+Route::apiResource('images', \App\Http\Controllers\ImageController::class);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('comments', \App\Http\Controllers\CommentController::class);
 Route::apiResource('ratings', \App\Http\Controllers\RatingController::class);

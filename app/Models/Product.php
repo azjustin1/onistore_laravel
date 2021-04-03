@@ -11,6 +11,11 @@ class Product extends Model
 
     protected $fillable = ['name', 'description', 'amount', 'slug', "image"];
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function category() {
         return $this->belongsToMany(Category::class);
     }

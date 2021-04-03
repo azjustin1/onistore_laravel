@@ -42,7 +42,7 @@ class CommentController extends Controller
             if ($comment->save()) {
                 return response()->json($comment, Response::HTTP_OK);
             } else {
-                return response()->json(["message" => "Store faild"], Response::HTTP_ACCEPTED);
+                return response()->json(["message" => "Store failed"], Response::HTTP_ACCEPTED);
             }
         }
     }
