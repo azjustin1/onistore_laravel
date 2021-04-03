@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,7 +40,18 @@ Route::group(["middleware" => "auth.jwt"], function () {
 });
 
 Route::apiResource('products', ProductController::class);
+Route::get('admin/products', [ProductController::class, 'adminIndex']);
+Route::get('admin/products/{id}', [ProductController::class, 'adminShow']);
+Route::delete('admin/products/{id}', [ProductController::class, 'adminDelete']);
+Route::put('admin/products/{id}', [ProductController::class, 'adminEdit']);
+
 Route::apiResource('images', \App\Http\Controllers\ImageController::class);
+
 Route::apiResource('categories', CategoryController::class);
+Route::get('admin/categories', [CategoryController::class, 'adminIndex']);
+Route::get('admin/categories/{id}', [CategoryController::class, 'adminShow']);
+Route::delete('admin/categories/{id}', [CategoryController::class, 'adminDelete']);
+Route::put('admin/categories/{id}', [CategoryController::class, 'adminEdit']);
+
 Route::apiResource('comments', \App\Http\Controllers\CommentController::class);
 Route::apiResource('ratings', \App\Http\Controllers\RatingController::class);

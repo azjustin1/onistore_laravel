@@ -8,6 +8,7 @@ use App\Models\Rating;
 use Illuminate\Http\Request;
 use App\Http\Middleware\Slugify;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -102,22 +103,22 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $validate = Validator::make($request->all(), [
-            "name" => "required|max:255"
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
-        } else {
-            $slug = new Slugify();
-            $requestData = $request->all();
-            $requestData['slug'] = $slug->Slug($request['name']);
-            if ($product->update($requestData)) {
-                return response()->json($product, Response::HTTP_OK);
-            } else {
-                return response()->json(["message" => "Update failed"], Response::HTTP_BAD_REQUEST);
-            }
-        }
+//        $validate = Validator::make($request->all(), [
+//            "name" => "required|max:255"
+//        ]);
+//
+//        if ($validate->fails()) {
+//            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
+//        } else {
+//            $slug = new Slugify();
+//            $requestData = $request->all();
+//            $requestData['slug'] = $slug->Slug($request['name']);
+//            if ($product->update($requestData)) {
+//                return response()->json($product, Response::HTTP_OK);
+//            } else {
+//                return response()->json(["message" => "Update failed"], Response::HTTP_BAD_REQUEST);
+//            }
+//        }
     }
 
     /**
@@ -131,6 +132,56 @@ class ProductController extends Controller
         if ($product->delete()) {
             return response()->json($product, Response::HTTP_OK);
         }
+    }
 
+    public function adminIndex()
+    {
+        $product = Product::all();
+        return response()->json($product, Response::HTTP_OK)
+            ->header('X-Total-Count', Product::all()->count())
+            ->header("Access-Control-Expose-Headers", "X-Total-Count");
+    }
+
+    public function adminShow($id) {
+        $productData = Product::with("image")->where("id", $id)->first();
+        if (empty($productData)) {
+            return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json($productData, Response::HTTP_OK);
+        }
+    }
+
+    public function adminEdit(Request $request, $id) {
+        $validate = Validator::make($request->all(), [
+            "name" => "required|max:255"
+        ]);
+
+        $product = DB::table('products')->where('id', $id);
+
+        if ($validate->fails()) {
+            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
+        } else {
+            $slug = new Slugify();
+            $requestData = $request->all();
+            $requestData['slug'] = $slug->Slug($request['name']);
+            if ($product->update($requestData)) {
+                return response()->json(["message" => "Update Successfully"], Response::HTTP_OK);
+            } else {
+                return response()->json(["message" => "Update failed"], Response::HTTP_BAD_REQUEST);
+            }
+        }
+    }
+
+    public function adminDelete($id) {
+        $productData = Product::with("image")->where("id", $id)->first();
+        if (empty($productData)) {
+            return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
+        } else {
+            if ($productData->delete()) {
+                return response()->json(["message" => "Delete Successfully"], Response::HTTP_NOT_FOUND);
+            } else {
+                return response()->json(["message" => "Delete failed"], Response::HTTP_NOT_FOUND);
+            }
+        }
     }
 }

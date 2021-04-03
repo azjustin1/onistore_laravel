@@ -6,6 +6,7 @@ use App\Http\Middleware\Slugify;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
@@ -94,22 +95,22 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $validate = Validator::make($request->all(), [
-            "name" => "required|max:255"
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
-        } else {
-            $slug = new Slugify();
-            $requestData = $request->all();
-            $requestData['slug'] = $slug->Slug($request['name']);
-            if ($category->update($requestData)) {
-                return response()->json($category, Response::HTTP_OK);
-            } else {
-                return response()->json(["message" => "Update failed"], Response::HTTP_BAD_REQUEST);
-            }
-        }
+//        $validate = Validator::make($request->all(), [
+//            "name" => "required|max:255"
+//        ]);
+//
+//        if ($validate->fails()) {
+//            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
+//        } else {
+//            $slug = new Slugify();
+//            $requestData = $request->all();
+//            $requestData['slug'] = $slug->Slug($request['name']);
+//            if ($category->update($requestData)) {
+//                return response()->json($category, Response::HTTP_OK);
+//            } else {
+//                return response()->json(["message" => "Update failed"], Response::HTTP_BAD_REQUEST);
+//            }
+//        }
     }
 
     /**
@@ -122,6 +123,53 @@ class CategoryController extends Controller
     {
         if ($category->delete()) {
             return response()->json($category, Response::HTTP_OK);
+        }
+    }
+
+    public function adminIndex()
+    {
+        $category = Category::all();
+        return response()->json($category, Response::HTTP_OK)
+            ->header('X-Total-Count', Category::all()->count())
+            ->header("Access-Control-Expose-Headers", "X-Total-Count");
+    }
+
+    public function adminEdit(Request $request, $id) {
+        $validate = Validator::make($request->all(), [
+            "name" => "required|max:255"
+        ]);
+
+        $category = DB::table('categories')->where('id', $id);
+
+        if ($validate->fails()) {
+            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
+        } else {
+            $slug = new Slugify();
+            $requestData = $request->all();
+            $requestData['slug'] = $slug->Slug($request['name']);
+            if ($category->update($requestData)) {
+                return response()->json(["message" => "Update Successfully"], Response::HTTP_OK);
+            } else {
+                return response()->json(["message" => "Update failed"], Response::HTTP_BAD_REQUEST);
+            }
+        }
+    }
+
+    public function adminShow($id) {
+        $categoryData = DB::table('categories')->where('id', $id)->first();
+        if (empty($categoryData)) {
+            return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json($categoryData, Response::HTTP_OK);
+        }
+    }
+
+    public function adminDelete($id) {
+        $categoryData = DB::table('categories')->where('id', $id)->delete();
+        if (empty($categoryData)) {
+            return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json(["message" => "Delete Successfully"], Response::HTTP_NOT_FOUND);
         }
     }
 }
