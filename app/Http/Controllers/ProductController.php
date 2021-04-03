@@ -144,10 +144,16 @@ class ProductController extends Controller
 
     public function adminShow($id) {
         $productData = Product::with("image")->where("id", $id)->first();
+        $comment = Comment::with("user")->where("product_id", $id)->get();
+        $rating = Rating::with("user")->where("product_id", $id)->get();
         if (empty($productData)) {
             return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
         } else {
-            return response()->json($productData, Response::HTTP_OK);
+            return response()->json([
+                "products" => $productData,
+                "comments" => $comment,
+                "ratings" => $rating
+            ], Response::HTTP_OK);
         }
     }
 
