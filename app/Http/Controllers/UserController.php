@@ -24,7 +24,7 @@ class UserController extends Controller
     public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "name" => ["required", "string", "max:255"],
+            "username" => ["required", "string", "max:255"],
             "email" => [
                 "required",
                 "string",
@@ -38,7 +38,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 400);
         } else {
             $user = User::create([
-                "name" => $request["name"],
+                "username" => $request["username"],
                 "email" => $request["email"],
                 "password" => Hash::make($request["password"]),
             ]);
@@ -52,7 +52,7 @@ class UserController extends Controller
 
     public function signin(Request $request)
     {
-        $input = $request->only("email", "password");
+        $input = $request->only("username", "password");
         $token = null;
 
         if (!($token = JWTAuth::attempt($input))) {
