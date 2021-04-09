@@ -22,7 +22,9 @@ class ProductSeeder extends Seeder
             DB::table("products")->insert([
                 "name" => Str::random(10),
                 "description" => Str::random(10) . "@gmail.com",
-                "amount" => random_int(0, 100),
+                "quantity" => random_int(0, 100),
+                "price" => random_int(0, 200),
+                "fake_price" => random_int(0, 200),
                 "slug" => Str::random(10),
                 "created_at" => Carbon::today()->subDays(rand(0, 365)),
                 "updated_at" => Carbon::today()->subDays(rand(0, 365)),
