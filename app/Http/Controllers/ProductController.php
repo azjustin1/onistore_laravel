@@ -44,31 +44,11 @@ class ProductController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Product $product)
     {
-        $validate = Validator::make($request->all(), [
-            "name" => "required|max:255",
-            "description" => "required|min:10|max:255"
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
-        } else {
-            $product = new Product();
-            $slug = new Slugify();
-            $product->name = $request->name;
-            $product->description = $request->description;
-            $product->quantity = $request->quantity;
-            $product->price = $request->price;
-            $product->fake_price = $request->fake_price;
-            $product->slug = $slug->Slug($product->name);
-            if ($product->save()) {
-                return response()->json($product, Response::HTTP_OK);
-            } else {
-                return response()->json(["message" => "Store failed"], Response::HTTP_BAD_GATEWAY);
-            }
-        }
+        return \response()->json(["message" => "Unauthorized"], Response::HTTP_FORBIDDEN);
     }
+
 
     /**
      * Display the specified resource.
@@ -133,9 +113,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if ($product->delete()) {
-            return response()->json($product, Response::HTTP_OK);
-        }
     }
 
     public function adminIndex()
@@ -191,6 +168,32 @@ class ProductController extends Controller
                 return response()->json(["message" => "Delete Successfully"], Response::HTTP_NOT_FOUND);
             } else {
                 return response()->json(["message" => "Delete failed"], Response::HTTP_NOT_FOUND);
+            }
+        }
+    }
+
+    public function adminCreate(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            "name" => "required|max:255",
+            "description" => "required|min:10|max:255"
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
+        } else {
+            $product = new Product();
+            $slug = new Slugify();
+            $product->name = $request->name;
+            $product->description = $request->description;
+            $product->quantity = $request->quantity;
+            $product->price = $request->price;
+            $product->fake_price = $request->fake_price;
+            $product->slug = $slug->Slug($product->name);
+            if ($product->save()) {
+                return response()->json($product, Response::HTTP_OK);
+            } else {
+                return response()->json(["message" => "Store failed"], Response::HTTP_BAD_GATEWAY);
             }
         }
     }

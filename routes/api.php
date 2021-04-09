@@ -38,7 +38,7 @@ Route::group(["prefix" => "admin", "middleware" => "auth.role:admin"], function 
 
         Route::get("products", [ProductController::class, "adminIndex"]);
         Route::get("products/{id}", [ProductController::class, "adminShow"]);
-        Route::post("products", [ProductController::class, "store"]);
+        Route::post("products", [ProductController::class, "adminCreate"]);
         Route::delete("products/{id}", [
             ProductController::class,
             "adminDelete",
@@ -72,5 +72,5 @@ Route::apiResource("comments", \App\Http\Controllers\CommentController::class);
 Route::apiResource("ratings", \App\Http\Controllers\RatingController::class);
 
 Route::post("/checkout", [\App\Http\Controllers\OrderController::class, "store"]);
-// Route::apiResource("products", ProductController::class);
+Route::apiResource("products", ProductController::class);
 Route::get("admin/dashboard", [ProductController::class, "getNumberOfProduct"]);
