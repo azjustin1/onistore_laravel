@@ -19,8 +19,8 @@ class CreateProductsTable extends Migration
             $table->string('description');
             $table->string('slug')->unique();
             $table->integer('quantity');
-            $table->double('price',8, 2);
-            $table->double('fake_price', 8, 2);
+            $table->double('price',10, 2);
+            $table->double('fake_price', 10, 2);
             $table->timestamps();
 
         });
