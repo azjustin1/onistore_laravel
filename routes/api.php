@@ -38,35 +38,20 @@ Route::group(
             return json_encode(["message" => "Authorized"]);
         });
 
-        Route::get("admin/products", [ProductController::class, "adminIndex"]);
-        Route::get("admin/products/{id}", [
-            ProductController::class,
-            "adminShow",
-        ]);
-        Route::delete("admin/products/{id}", [
+        Route::get("products", [ProductController::class, "adminIndex"]);
+        Route::get("products/{id}", [ProductController::class, "adminShow"]);
+        Route::delete("products/{id}", [
             ProductController::class,
             "adminDelete",
         ]);
-        Route::put("admin/products/{id}", [
-            ProductController::class,
-            "adminEdit",
-        ]);
-        Route::get("admin/categories", [
-            CategoryController::class,
-            "adminIndex",
-        ]);
-        Route::get("admin/categories/{id}", [
-            CategoryController::class,
-            "adminShow",
-        ]);
-        Route::delete("admin/categories/{id}", [
+        Route::put("products/{id}", [ProductController::class, "adminEdit"]);
+        Route::get("categories", [CategoryController::class, "adminIndex"]);
+        Route::get("categories/{id}", [CategoryController::class, "adminShow"]);
+        Route::delete("categories/{id}", [
             CategoryController::class,
             "adminDelete",
         ]);
-        Route::put("admin/categories/{id}", [
-            CategoryController::class,
-            "adminEdit",
-        ]);
+        Route::put("categories/{id}", [CategoryController::class, "adminEdit"]);
     }
 );
 
