@@ -15,8 +15,8 @@ class RoleAuthorization
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next, ...$roles)
@@ -54,9 +54,7 @@ class RoleAuthorization
     {
         return response()->json(
             [
-                "message" => $message
-                    ? $message
-                    : "You are unauthorized to access this resource",
+                "message" => $message ? $message : "You are unauthorized to access this resource",
                 "success" => false,
             ],
             401

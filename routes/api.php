@@ -31,9 +31,7 @@ Route::post("signup", [UserController::class, "signup"]);
 Route::post("signin", [UserController::class, "signin"]);
 
 // Only admin can access those routes /api/admin/
-Route::group(
-    ["prefix" => "admin", "middleware" => "auth.role:admin"],
-    function () {
+Route::group(["prefix" => "admin", "middleware" => "auth.role:admin"], function () {
         Route::get("auth", function () {
             return json_encode(["message" => "Authorized"]);
         });
@@ -67,16 +65,22 @@ Route::group(
             CategoryController::class,
             "adminEdit",
         ]);
+
+
     }
 );
 
 // Those routes can be acc with admin or user account
 // /api/
 Route::group(["middleware" => "auth.role:admin, user"], function () {
-    Route::apiResource("products", ProductController::class);
+//    Route::apiResource("products", ProductController::class);
     Route::apiResource("images", \App\Http\Controllers\ImageController::class);
     Route::apiResource("categories", CategoryController::class);
 });
 
 Route::apiResource("comments", \App\Http\Controllers\CommentController::class);
 Route::apiResource("ratings", \App\Http\Controllers\RatingController::class);
+
+Route::post("/checkout", [\App\Http\Controllers\OrderController::class, "store"]);
+Route::apiResource("products", ProductController::class);
+Route::get("admin/dashboard", [ProductController::class, "getNumberOfProduct"]);

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Rating;
 use Illuminate\Http\Request;
@@ -56,7 +58,9 @@ class ProductController extends Controller
             $slug = new Slugify();
             $product->name = $request->name;
             $product->description = $request->description;
-            $product->amount = $request->amount;
+            $product->quantity = $request->quantity;
+            $product->price = $request->price;
+            $product->fake_price = $request->fake_price;
             $product->slug = $slug->Slug($product->name);
             if ($product->save()) {
                 return response()->json($product, Response::HTTP_OK);
@@ -189,5 +193,16 @@ class ProductController extends Controller
                 return response()->json(["message" => "Delete failed"], Response::HTTP_NOT_FOUND);
             }
         }
+    }
+
+    public function getNumberOfProduct() {
+        $product = Product::all()->count();
+        $category = Category::all()->count();
+        $order = Order::all()->count();
+        return response()->json([
+            "product_items" => $product,
+            "category_items" => $category,
+            "order_items" => $order
+            ]);
     }
 }
