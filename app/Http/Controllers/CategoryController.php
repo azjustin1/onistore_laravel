@@ -140,15 +140,20 @@ class CategoryController extends Controller
             "name" => "required|max:255"
         ]);
 
-        $category = DB::table('categories')->where('id', $id);
+        $category = Category::with("product")->find($id);
+
+        if (!isset($category)) {
+            return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
+        }
 
         if ($validate->fails()) {
             return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
         } else {
             $slug = new Slugify();
-            $requestData = $request->all();
-            $requestData['slug'] = $slug->Slug($request['name']);
-            if ($category->update($requestData)) {
+            $category->name = $request->name;
+            $category->description = $request->description;
+            $category->slug = $slug->Slug($request->name);
+            if ($category->save()) {
                 return response()->json(["message" => "Update Successfully"], Response::HTTP_OK);
             } else {
                 return response()->json(["message" => "Update failed"], Response::HTTP_BAD_REQUEST);

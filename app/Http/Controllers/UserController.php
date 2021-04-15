@@ -71,7 +71,7 @@ class UserController extends Controller
     public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "username" => ["required", "string", "max:255"],
+            "username" => ["required", "string", "max:255", "unique:users"],
             "email" => [
                 "required",
                 "string",
@@ -101,7 +101,9 @@ class UserController extends Controller
     {
         $input = $request->only("username", "password");
         $token = null;
+        $myTTL = 60; //minutes
 
+        JWTAuth::factory()->setTTL($myTTL);
         if (!($token = JWTAuth::attempt($input))) {
             return response()->json(
                 [
@@ -145,5 +147,12 @@ class UserController extends Controller
                 500
             );
         }
+    }
+
+    public function auth() {
+        return response()->json([
+            "status" => true,
+            "message" => "Authenticated",
+        ]);
     }
 }

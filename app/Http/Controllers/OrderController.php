@@ -18,7 +18,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::all();
+        $orders = Order::with(["user", "product"])->get();
         return response()->json($orders, Response::HTTP_OK)
             ->header('X-Total-Count', Order::all()->count())
             ->header("Access-Control-Expose-Headers", "X-Total-Count");
@@ -53,11 +53,11 @@ class OrderController extends Controller
         $order->phone = $requestData["phone"];
         $order->address = $requestData["address"];
         $order->note = $requestData["note"];
+        $order->total = $requestData["total"];
 
         if ($order->save()) {
             foreach ($listCart as $item) {
                 $orderProduct = new OrderProduct();
-//                $product = new Product();
                 $productFind = Product::with("rating")->find($item["id"]);
                 $orderProduct->order_id = $order->id;
                 $orderProduct->product_id = $item["id"];
@@ -77,11 +77,16 @@ class OrderController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Order $order)
+    public function show($id)
     {
-        //
+        $order = Order::with(["user", "product"])->find($id);
+        if (empty($order)) {
+            return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json($order, Response::HTTP_OK);
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImageController;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -37,8 +38,15 @@ Route::group(["prefix" => "admin", "middleware" => "auth.role:admin"], function 
         return json_encode(["message" => "Authorized"]);
     });
 
+    // Images
+    Route::post("images", [ImageController::class, "store"]);
+    Route::delete("images/{id}", [ImageController::class, "destroy"]);
+    Route::get("images", [ImageController::class, "index"]);
+    Route::get("images/{id}", [ImageController::class, "show"]);
+
     //Order
     Route::get("orders", [\App\Http\Controllers\OrderController::class, "index"]);
+    Route::get("orders/{id}", [\App\Http\Controllers\OrderController::class, "show"]);
     Route::delete("orders/{id}", [\App\Http\Controllers\OrderController::class, "destroy"]);
 
     // Dashboard
@@ -58,7 +66,7 @@ Route::group(["prefix" => "admin", "middleware" => "auth.role:admin"], function 
 
 
     // Image upload test
-    Route::post("upload", [ProductController::class, "uploadTest"]);
+    Route::post("upload", [\App\Http\Controllers\ImageController::class, "uploadTest"]);
 
     // Categories
     Route::post("categories", [CategoryController::class, "adminCreate"]);
@@ -71,15 +79,15 @@ Route::group(["prefix" => "admin", "middleware" => "auth.role:admin"], function 
 
 // Those routes can be acc with admin or user account
 // /api/
-Route::group(["middleware" => "auth.role:admin, user"], function () {
+Route::group(["middleware" => "auth.role:user"], function () {
 //    Route::apiResource("products", ProductController::class);
-    Route::apiResource("images", \App\Http\Controllers\ImageController::class);
+    Route::get("/auth", [\App\Http\Controllers\UserController::class, "auth"]);
     Route::apiResource("comments", \App\Http\Controllers\CommentController::class);
     Route::apiResource("ratings", \App\Http\Controllers\RatingController::class);
-    Route::post("/checkout", [\App\Http\Controllers\OrderController::class, "store"]);
+    Route::post("checkout", [\App\Http\Controllers\OrderController::class, "store"]);
 //    Route::apiResource("categories", CategoryController::class);
 });
 
 Route::get("products", [ProductController::class, "index"]);
-Route::post("/search", [ProductController::class, "getSearch"]);
-Route::apiResource("products", ProductController::class);
+Route::post("search", [ProductController::class, "getSearch"]);
+Route::get("products/{slug}", [ProductController::class, "show"]);

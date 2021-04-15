@@ -57,9 +57,9 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Product $product)
+    public function show($slug)
     {
-        $product::with(["category", "image", "comment", "rating"])->get();
+        $product = Product::with(["category", "image", "comment", "rating"])->where("slug", $slug)->first();
         return response()->json($product, Response::HTTP_OK);
     }
 
