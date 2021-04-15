@@ -188,10 +188,11 @@ class ProductController extends Controller
                 if (isset($listCategory)) {
                     foreach ($listCategory as $item){
                         $productCategory = new CategoryProduct();
-                        $productCategory->category_id = $item["id"];
+                        $productCategory->category_id = $item;
                         $productCategory->product_id = $product->id;
                         $productCategory->save();
                     }
+
                 } else {
                     return response()->json(["message" => "Store category failed"], Response::HTTP_BAD_GATEWAY);
                 }
@@ -217,7 +218,7 @@ class ProductController extends Controller
     }
 
     public function getSearch(Request $request) {
-        $product = Product::with(["image", "category"])
+        $product = Product::with(["image", "categories"])
             ->where("name", "like", "%" . $request["search"] . "%")
             ->orWhere("price", $request["search"])->get();
 
@@ -237,18 +238,17 @@ class ProductController extends Controller
 
     public function uploadTest(Request $request) {
 
-        $a = "";
+        $url = "";
         $files = $request->file('images');
         if($request->hasFile('images')) {
             foreach($files as $file) {
                 $name = $file->getClientOriginalName();
                 $destinationPath = public_path('\\images');
                 $file->move($destinationPath, $name);
-                $a = $destinationPath . "\\" . $name;
+//                $a = $destinationPath . "\\" . $name;
                 $url = url("images/" . $name);
-
             }
         }
-        return response()->json($a);
+        return response()->json($url);
     }
 }
