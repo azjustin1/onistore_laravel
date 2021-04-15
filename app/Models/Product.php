@@ -9,7 +9,9 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'fake_price', 'price', 'slug', 'quantity', 'category', "image"];
+    protected $table = "products";
+
+    protected $fillable = ["id",'name', 'description', 'fake_price', 'price', 'slug', 'quantity', 'category', "image"];
 
     public function getRouteKeyName()
     {

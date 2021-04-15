@@ -37,48 +37,48 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            "name" => "required|max:255",
-            "description" => "required|min:10|max:255"
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
-        } else {
-
-            $category = new Category();
-            $slug = new Slugify();
-            $category->name = $request->name;
-            $category->description = $request->description;
-            $category->slug = $slug->Slug($category->name);
-            if ($category->save()) {
-                return response()->json($category, Response::HTTP_OK);
-            } else {
-                return response()->json(["message" => "Store failed"], Response::HTTP_BAD_GATEWAY);
-            }
-        }
+//        $validate = Validator::make($request->all(), [
+//            "name" => "required|max:255",
+//            "description" => "required|min:10|max:255"
+//        ]);
+//
+//        if ($validate->fails()) {
+//            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
+//        } else {
+//
+//            $category = new Category();
+//            $slug = new Slugify();
+//            $category->name = $request->name;
+//            $category->description = $request->description;
+//            $category->slug = $slug->Slug($category->name);
+//            if ($category->save()) {
+//                return response()->json($category, Response::HTTP_OK);
+//            } else {
+//                return response()->json(["message" => "Store failed"], Response::HTTP_BAD_GATEWAY);
+//            }
+//        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Category  $category
+     * @param \App\Models\Category $category
      * @return \Illuminate\Http\Response
      */
     public function show(Category $category)
     {
-        return response()->json($category, Response::HTTP_OK);
+//        return response()->json($category, Response::HTTP_OK);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Category  $category
+     * @param \App\Models\Category $category
      * @return \Illuminate\Http\Response
      */
     public function edit(Category $category)
@@ -89,8 +89,8 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category  $category
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Category $category
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, Category $category)
@@ -116,14 +116,14 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Category  $category
+     * @param \App\Models\Category $category
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Category $category)
     {
-        if ($category->delete()) {
-            return response()->json($category, Response::HTTP_OK);
-        }
+//        if ($category->delete()) {
+//            return response()->json($category, Response::HTTP_OK);
+//        }
     }
 
     public function adminIndex()
@@ -134,7 +134,8 @@ class CategoryController extends Controller
             ->header("Access-Control-Expose-Headers", "X-Total-Count");
     }
 
-    public function adminEdit(Request $request, $id) {
+    public function adminEdit(Request $request, $id)
+    {
         $validate = Validator::make($request->all(), [
             "name" => "required|max:255"
         ]);
@@ -155,7 +156,8 @@ class CategoryController extends Controller
         }
     }
 
-    public function adminShow($id) {
+    public function adminShow($id)
+    {
         $categoryData = DB::table('categories')->where('id', $id)->first();
         if (empty($categoryData)) {
             return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
@@ -164,12 +166,44 @@ class CategoryController extends Controller
         }
     }
 
-    public function adminDelete($id) {
-        $categoryData = DB::table('categories')->where('id', $id)->delete();
-        if (empty($categoryData)) {
+    public function adminDelete($id): \Illuminate\Http\JsonResponse
+    {
+        $categoryData = Category::with("product")->find($id);
+        if (!isset($categoryData)) {
             return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
         } else {
-            return response()->json(["message" => "Delete Successfully"], Response::HTTP_NOT_FOUND);
+            try {
+                if ($categoryData->delete()) {
+                    return response()->json(["message" => "Delete Successfully"], Response::HTTP_OK);
+                } else {
+                    return response()->json(["message" => "Delete failed"], Response::HTTP_NOT_FOUND);
+                }
+            } catch (\Exception $e) {
+                return response()->json(["message" => $e->getMessage()]);
+            }
+        }
+    }
+
+    public function adminCreate(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            "name" => "required|max:255",
+            "description" => "required|min:10|max:255"
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
+        } else {
+            $category = new Category();
+            $slug = new Slugify();
+            $category->name = $request->name;
+            $category->description = $request->description;
+            $category->slug = $slug->Slug($category->name);
+            if ($category->save()) {
+                return response()->json($category, Response::HTTP_OK);
+            } else {
+                return response()->json(["message" => "Store failed"], Response::HTTP_BAD_GATEWAY);
+            }
         }
     }
 }

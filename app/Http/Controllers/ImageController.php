@@ -96,8 +96,9 @@ class ImageController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Image  $image
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Image $image
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function destroy(Image $image)
     {

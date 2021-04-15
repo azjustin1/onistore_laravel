@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
@@ -20,6 +22,51 @@ class UserController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
+
+    public function index() {
+        $user = User::all();
+        return response()->json($user, Response::HTTP_OK)
+            ->header('X-Total-Count', User::all()->count())
+            ->header("Access-Control-Expose-Headers", "X-Total-Count");
+    }
+
+    public function adminShow($id): \Illuminate\Http\JsonResponse
+    {
+        $user = User::with("rating")->find($id);
+        if (!isset($user)) {
+            return response()->json(["message" => "Not found"], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json($user, Response::HTTP_OK);
+        }
+    }
+
+    public function adminEdit(Request $request, $id)
+    {
+        $validate = Validator::make($request->all(), [
+            "username" => ["required", "string", "max:255"],
+            "email" => [
+                "required",
+                "string",
+                "email",
+                "max:255",
+                "unique:users",
+            ],
+            "role" => "required"
+        ]);
+
+        $user = User::with("rating")->find($id);
+
+        if ($validate->fails()) {
+            return response()->json($validate->errors(), Response::HTTP_BAD_REQUEST);
+        } else {
+            $requestData = $request->all();
+            if ($user->update($requestData)) {
+                return response()->json(["message" => "Update Successfully"], Response::HTTP_OK);
+            } else {
+                return response()->json(["message" => "Update failed"], Response::HTTP_BAD_REQUEST);
+            }
+        }
+    }
 
     public function signup(Request $request)
     {
