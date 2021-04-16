@@ -196,18 +196,13 @@ class ProductController extends Controller
                 } else {
                     return response()->json(["message" => "Store category failed"], Response::HTTP_BAD_GATEWAY);
                 }
-                $files = $request->file('images');
+                $files = $request["images"];
                 if (isset($files)) {
-                    if($request->hasFile('images')) {
-                        foreach($files as $file) {
-                            $name = $file->getClientOriginalName();
-                            $destinationPath = public_path('/images');
-                            $file->move($destinationPath, $name);
-                            $image = new Image();
-                            $image->product_id = $product->id;
-                            $image->url = url("images/" . $name);
-                            $image->save();
-                        }
+                    foreach($files as $file) {
+                        $image = new Image();
+                        $image->product_id = $product->id;
+                        $image->url = $file;
+                        $image->save();
                     }
                 }
                 return response()->json($product, Response::HTTP_OK);

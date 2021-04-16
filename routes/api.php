@@ -79,7 +79,7 @@ Route::group(["prefix" => "admin", "middleware" => "auth.role:admin"], function 
 
 // Those routes can be acc with admin or user account
 // /api/
-Route::group(["middleware" => "auth.role:user"], function () {
+Route::group(["middleware" => "auth.role:user,admin"], function () {
 //    Route::apiResource("products", ProductController::class);
     Route::get("/auth", [\App\Http\Controllers\UserController::class, "auth"]);
     Route::apiResource("comments", \App\Http\Controllers\CommentController::class);
